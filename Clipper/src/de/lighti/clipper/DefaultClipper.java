@@ -562,16 +562,17 @@ public class DefaultClipper extends ClipperBase {
         activeEdges = null;
         sortedEdges = null;
         intersectList = new ArrayList<IntersectNode>();
-        intersectNodeComparer = ( node1, node2 ) -> {
-            final long i = node2.getPt().getY() - node1.getPt().getY();
-            if (i > 0) {
-                return 1;
-            }
-            else if (i < 0) {
-                return -1;
-            }
-            else {
-                return 0;
+        intersectNodeComparer = new Comparator<DefaultClipper.IntersectNode>() {
+            @Override
+            public int compare(IntersectNode node1, IntersectNode node2) {
+                final long i = node2.getPt().getY() - node1.getPt().getY();
+                if (i > 0) {
+                    return 1;
+                } else if (i < 0) {
+                    return -1;
+                } else {
+                    return 0;
+                }
             }
         };
 
@@ -908,6 +909,9 @@ public class DefaultClipper extends ClipperBase {
         //add each output polygon/contour to polytree ...
         for (int i = 0; i < polyOuts.size(); i++) {
             final OutRec outRec = polyOuts.get( i );
+            if (outRec.getPoints() == null) {
+                continue;
+            }
             final int cnt = outRec.getPoints().getPointCount();
             if (outRec.isOpen && cnt < 2 || !outRec.isOpen && cnt < 3) {
                 continue;

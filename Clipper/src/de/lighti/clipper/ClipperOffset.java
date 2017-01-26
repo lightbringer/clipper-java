@@ -389,7 +389,7 @@ public class ClipperOffset {
             //remove the outer PolyNode rectangle ...
             if (solution.getChildCount() == 1 && solution.getChilds().get( 0 ).getChildCount() > 0) {
                 final PolyNode outerNode = solution.getChilds().get( 0 );
-                solution.getChilds().set( 0, outerNode.getChilds().get( 0 ) );
+                solution.childs.set( 0, outerNode.getChilds().get( 0 ) );
                 solution.getChilds().get( 0 ).setParent( solution );
                 for (int i = 1; i < outerNode.getChildCount(); i++) {
                     solution.addChild( outerNode.getChilds().get( i ) );

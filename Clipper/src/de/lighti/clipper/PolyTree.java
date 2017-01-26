@@ -3,7 +3,7 @@ package de.lighti.clipper;
 import java.util.ArrayList;
 import java.util.List;
 
-class PolyTree extends PolyNode {
+public class PolyTree extends PolyNode {
     private final List<PolyNode> allPolys = new ArrayList<PolyNode>();
 
     public void Clear() {

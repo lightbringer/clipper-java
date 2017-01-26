@@ -8,7 +8,7 @@ import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
 import de.lighti.clipper.Point.LongPoint;
 
-class PolyNode {
+public class PolyNode {
     enum NodeType {
         ANY, OPEN, CLOSED
     }
