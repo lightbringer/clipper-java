@@ -88,10 +88,10 @@ public abstract class Point<T extends Number & Comparable<T>> {
 
     static double distanceFromLineSqrd( Point<? extends Number> pt, Point<? extends Number> ln1, Point<? extends Number> ln2 ) {
         //The equation of a line in general form (Ax + By + C = 0)
-        //given 2 points (x¹,y¹) & (x²,y²) is ...
-        //(y¹ - y²)x + (x² - x¹)y + (y² - y¹)x¹ - (x² - x¹)y¹ = 0
-        //A = (y¹ - y²); B = (x² - x¹); C = (y² - y¹)x¹ - (x² - x¹)y¹
-        //perpendicular distance of point (x³,y³) = (Ax³ + By³ + C)/Sqrt(A² + B²)
+        //given 2 points (xÂ¹,yÂ¹) & (xÂ²,yÂ²) is ...
+        //(yÂ¹ - yÂ²)x + (xÂ² - xÂ¹)y + (yÂ² - yÂ¹)xÂ¹ - (xÂ² - xÂ¹)yÂ¹ = 0
+        //A = (yÂ¹ - yÂ²); B = (xÂ² - xÂ¹); C = (yÂ² - yÂ¹)xÂ¹ - (xÂ² - xÂ¹)yÂ¹
+        //perpendicular distance of point (xÂ³,yÂ³) = (AxÂ³ + ByÂ³ + C)/Sqrt(AÂ² + BÂ²)
         //see http://en.wikipedia.org/wiki/Perpendicular_distance
         final double A = ln1.y.doubleValue() - ln2.y.doubleValue();
         final double B = ln2.x.doubleValue() - ln1.x.doubleValue();
