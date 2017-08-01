@@ -7,7 +7,7 @@ import java.util.List;
 import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
 
-class PolyNode {
+public class PolyNode {
     enum NodeType {
         ANY, OPEN, CLOSED
     }
