@@ -18,7 +18,7 @@ import de.lighti.clipper.Clipper.PolyType;
 import de.lighti.clipper.DefaultClipper;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
-import de.lighti.clipper.Point.LongPoint;
+import de.lighti.clipper.Point;
 
 public class Program {
 
@@ -26,7 +26,7 @@ public class Program {
         final int len1 = ints.length / 2;
         final Path result = new Path( len1 );
         for (int i = 0; i < len1; i++) {
-            result.add( new LongPoint( ints[i * 2], ints[i * 2 + 1] ) );
+            result.add( new Point( ints[i * 2], ints[i * 2 + 1] ) );
         }
         return result;
     }
@@ -81,7 +81,7 @@ public class Program {
 
                         x = x + xOffset;
                         y = y + yOffset;
-                        pg.add( new LongPoint( x, y ) );
+                        pg.add( new Point( x, y ) );
                     }
                 }
                 else {
@@ -100,7 +100,7 @@ public class Program {
 
                         x = x * scaling + xOffset;
                         y = y * scaling + yOffset;
-                        pg.add( new LongPoint( (int) Math.round( x ), (int) Math.round( y ) ) );
+                        pg.add( new Point( (int) Math.round( x ), (int) Math.round( y ) ) );
                     }
                 }
             }
@@ -271,7 +271,7 @@ public class Program {
     static Path MakeRandomPolygon( Random r, int maxWidth, int maxHeight, int edgeCount, int scale ) {
         final Path result = new Path( edgeCount );
         for (int i = 0; i < edgeCount; i++) {
-            result.add( new LongPoint( r.nextInt( maxWidth ) * scale, r.nextInt( maxHeight ) * scale ) );
+            result.add( new Point( r.nextInt( maxWidth ) * scale, r.nextInt( maxHeight ) * scale ) );
         }
         return result;
     }
@@ -296,7 +296,7 @@ public class Program {
             writer.write( String.format( "%d%n", ppg.size() ) );
             for (final Path pg : ppg) {
                 writer.write( String.format( "%d%n", pg.size() ) );
-                for (final LongPoint ip : pg) {
+                for (final Point ip : pg) {
                     writer.write( String.format( "%.2f, %.2f%n", ip.getX() / scaling, ip.getY() / scaling ) );
                 }
             }

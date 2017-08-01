@@ -1,7 +1,5 @@
 package de.lighti.clipper;
 
-import de.lighti.clipper.Point.LongPoint;
-
 public interface Clipper {
     public enum ClipType {
         INTERSECTION, UNION, DIFFERENCE, XOR
@@ -28,7 +26,7 @@ public interface Clipper {
     };
 
     public interface ZFillCallback {
-        void zFill( LongPoint bot1, LongPoint top1, LongPoint bot2, LongPoint top2, LongPoint pt );
+        void zFill(Point bot1, Point top1, Point bot2, Point top2, Point pt);
     };
 
     //InitOptions that can be passed to the constructor ...

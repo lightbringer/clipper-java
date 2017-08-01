@@ -1,16 +1,16 @@
 package de.lighti.clipper;
 
 public class LongRect {
-    public long left;
-    public long top;
-    public long right;
-    public long bottom;
+    public double left;
+    public double top;
+    public double right;
+    public double bottom;
 
     public LongRect() {
 
     }
 
-    public LongRect( long l, long t, long r, long b ) {
+    public LongRect( double l, double t, double r, double b ) {
         left = l;
         top = t;
         right = r;

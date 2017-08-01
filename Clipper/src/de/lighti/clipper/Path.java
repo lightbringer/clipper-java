@@ -3,25 +3,23 @@ package de.lighti.clipper;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import de.lighti.clipper.Point.LongPoint;
-
 /**
  * A pure convenience class to avoid writing List<IntPoint> everywhere.
  *
  * @author Tobias Mahlmann
  *
  */
-public class Path extends ArrayList<LongPoint> {
+public class Path extends ArrayList<Point> {
     static class Join {
         Path.OutPt outPt1;
         Path.OutPt outPt2;
-        private LongPoint offPt;
+        private Point offPt;
 
-        public LongPoint getOffPt() {
+        public Point getOffPt() {
             return offPt;
         }
 
-        public void setOffPt( LongPoint offPt ) {
+        public void setOffPt( Point offPt ) {
             this.offPt = offPt;
         }
 
@@ -69,24 +67,24 @@ public class Path extends ArrayList<LongPoint> {
             while (p.getPt().equals( btmPt1.getPt() ) && !p.equals( btmPt1 )) {
                 p = p.prev;
             }
-            final double dx1p = Math.abs( LongPoint.getDeltaX( btmPt1.getPt(), p.getPt() ) );
+            final double dx1p = Math.abs( Point.getDeltaX( btmPt1.getPt(), p.getPt() ) );
             p = btmPt1.next;
             while (p.getPt().equals( btmPt1.getPt() ) && !p.equals( btmPt1 )) {
                 p = p.next;
             }
-            final double dx1n = Math.abs( LongPoint.getDeltaX( btmPt1.getPt(), p.getPt() ) );
+            final double dx1n = Math.abs( Point.getDeltaX( btmPt1.getPt(), p.getPt() ) );
 
             p = btmPt2.prev;
             while (p.getPt().equals( btmPt2.getPt() ) && !p.equals( btmPt2 )) {
                 p = p.prev;
             }
-            final double dx2p = Math.abs( LongPoint.getDeltaX( btmPt2.getPt(), p.getPt() ) );
+            final double dx2p = Math.abs( Point.getDeltaX( btmPt2.getPt(), p.getPt() ) );
             p = btmPt2.next;
             while (p.getPt().equals( btmPt2.getPt() ) && p.equals( btmPt2 )) {
                 p = p.next;
             }
-            final double dx2n = Math.abs( LongPoint.getDeltaX( btmPt2.getPt(), p.getPt() ) );
-            
+            final double dx2n = Math.abs( Point.getDeltaX( btmPt2.getPt(), p.getPt() ) );
+
             if (Math.max( dx1p, dx1n ) == Math.max( dx2p, dx2n ) && Math.min( dx1p, dx1n ) == Math.min( dx2p, dx2n )) {
                 return btmPt1.area() > 0; //if otherwise identical use orientation
             }
@@ -96,14 +94,14 @@ public class Path extends ArrayList<LongPoint> {
         }
 
         int idx;
-        private LongPoint pt;
+        private Point pt;
         OutPt next;
 
         OutPt prev;
 
         public Path.OutPt duplicate( boolean InsertAfter ) {
             final Path.OutPt result = new Path.OutPt();
-            result.setPt( new LongPoint( getPt() ) );
+            result.setPt( new Point( getPt() ) );
             result.idx = idx;
             if (InsertAfter) {
                 result.next = next;
@@ -169,7 +167,7 @@ public class Path extends ArrayList<LongPoint> {
             return result;
         }
 
-        public LongPoint getPt() {
+        public Point getPt() {
             return pt;
         }
 
@@ -187,10 +185,10 @@ public class Path extends ArrayList<LongPoint> {
             while (pp1 != this);
         }
 
-        public void setPt( LongPoint pt ) {
+        public void setPt( Point pt ) {
             this.pt = pt;
         }
-    
+
         private double area() {
             Path.OutPt op = this;
             double a = 0;
@@ -198,7 +196,7 @@ public class Path extends ArrayList<LongPoint> {
                 a = a + (double) (op.prev.getPt().getX() + op.getPt().getX()) * (double) (op.prev.getPt().getY() - op.getPt().getY());
                 op = op.next;
             } while (op != this);
-            return a * 0.5;	
+            return a * 0.5;
         }
     }
 
@@ -345,7 +343,7 @@ public class Path extends ArrayList<LongPoint> {
         return result;
     }
 
-    public int isPointInPolygon( LongPoint pt ) {
+    public int isPointInPolygon(Point pt) {
         //returns 0 if false, +1 if true, -1 if pt ON polygon boundary
         //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
         //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.5498&rep=rep1&type=pdf
@@ -354,9 +352,9 @@ public class Path extends ArrayList<LongPoint> {
         if (cnt < 3) {
             return 0;
         }
-        LongPoint ip = get( 0 );
+        Point ip = get( 0 );
         for (int i = 1; i <= cnt; ++i) {
-            final LongPoint ipNext = i == cnt ? get( 0 ) : get( i );
+            final Point ipNext = i == cnt ? get( 0 ) : get( i );
             if (ipNext.getY() == pt.getY()) {
                 if (ipNext.getX() == pt.getX() || ip.getY() == pt.getY() && ipNext.getX() > pt.getX() == ip.getX() < pt.getX()) {
                     return -1;
@@ -404,10 +402,10 @@ public class Path extends ArrayList<LongPoint> {
         Collections.reverse( this );
     }
 
-    public Path TranslatePath( LongPoint delta ) {
+    public Path TranslatePath(Point delta ) {
         final Path outPath = new Path( size() );
         for (int i = 0; i < size(); i++) {
-            outPath.add( new LongPoint( get( i ).getX() + delta.getX(), get( i ).getY() + delta.getY() ) );
+            outPath.add( new Point( get( i ).getX() + delta.getX(), get( i ).getY() + delta.getY() ) );
         }
         return outPath;
     }

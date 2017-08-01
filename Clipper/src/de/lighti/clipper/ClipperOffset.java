@@ -9,8 +9,6 @@ import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
 import de.lighti.clipper.Clipper.PolyFillType;
 import de.lighti.clipper.Clipper.PolyType;
-import de.lighti.clipper.Point.DoublePoint;
-import de.lighti.clipper.Point.LongPoint;
 
 public class ClipperOffset {
     private static boolean nearZero( double val ) {
@@ -21,11 +19,12 @@ public class ClipperOffset {
     private Path srcPoly;
     private Path destPoly;
 
-    private final List<DoublePoint> normals;
+    private final List<Point> normals;
     private double delta, inA, sin, cos;
 
     private double miterLim, stepsPerRad;
-    private LongPoint lowest;
+    private int lowestX;
+    private int lowestY;
 
     private final PolyNode polyNodes;
     private final double arcTolerance;
@@ -44,13 +43,13 @@ public class ClipperOffset {
     public ClipperOffset( double miterLimit, double arcTolerance ) {
         this.miterLimit = miterLimit;
         this.arcTolerance = arcTolerance;
-        lowest = new LongPoint();
-        lowest.setX( -1l );
+        lowestX = -1;
+        lowestY = 0;
         polyNodes = new PolyNode();
-        normals = new ArrayList<DoublePoint>();
+        normals = new ArrayList<Point>();
     }
 
-    public void addPath( Path path, JoinType joinType, EndType endType ) {
+    public void addPath(Path path, JoinType joinType, EndType endType ) {
         int highI = path.size() - 1;
         if (highI < 0) {
             return;
@@ -88,19 +87,21 @@ public class ClipperOffset {
         if (endType != EndType.CLOSED_POLYGON) {
             return;
         }
-        if (lowest.getX() < 0) {
-            lowest = new LongPoint( polyNodes.getChildCount() - 1, k );
+        if (lowestX < 0) {
+            lowestX = polyNodes.getChildCount() - 1;
+            lowestY = k;
         }
         else {
-            final LongPoint ip = polyNodes.getChilds().get( (int) lowest.getX() ).getPolygon().get( (int) lowest.getY() );
+            final Point ip = polyNodes.getChilds().get( lowestX ).getPolygon().get( lowestY );
             if (newNode.getPolygon().get( k ).getY() > ip.getY() || newNode.getPolygon().get( k ).getY() == ip.getY()
                             && newNode.getPolygon().get( k ).getX() < ip.getX()) {
-                lowest = new LongPoint( polyNodes.getChildCount() - 1, k );
+                lowestX = polyNodes.getChildCount() - 1;
+                lowestY = k;
             }
         }
     }
 
-    public void addPaths( Paths paths, JoinType joinType, EndType endType ) {
+    public void addPaths(Paths paths, JoinType joinType, EndType endType ) {
         for (final Path p : paths) {
             addPath( p, joinType, endType );
         }
@@ -108,13 +109,13 @@ public class ClipperOffset {
 
     public void clear() {
         polyNodes.getChilds().clear();
-        lowest.setX( -1l );
+        lowestX = -1;
     }
 
     private void doMiter( int j, int k, double r ) {
         final double q = delta / r;
-        destPoly.add( new LongPoint( (int) Math.round( srcPoly.get( j ).getX() + (normals.get( k ).getX() + normals.get( j ).getX()) * q ), (int) Math
-                        .round( srcPoly.get( j ).getY() + (normals.get( k ).getY() + normals.get( j ).getY()) * q ) ) );
+        destPoly.add( new Point( srcPoly.get( j ).getX() + (normals.get( k ).getX() + normals.get( j ).getX()) * q ,
+                srcPoly.get( j ).getY() + (normals.get( k ).getY() + normals.get( j ).getY()) * q )  );
     }
 
     private void doOffset( double delta ) {
@@ -175,8 +176,8 @@ public class ClipperOffset {
                 if (node.getJoinType() == JoinType.ROUND) {
                     double X = 1.0, Y = 0.0;
                     for (int j = 1; j <= steps; j++) {
-                        destPoly.add( new LongPoint( (int) Math.round( srcPoly.get( 0 ).getX() + X * delta ), (int) Math.round( srcPoly.get( 0 ).getY() + Y
-                                        * delta ) ) );
+                        destPoly.add( new Point( srcPoly.get( 0 ).getX() + X * delta ,  srcPoly.get( 0 ).getY() + Y
+                                        * delta ) );
                         final double X2 = X;
                         X = X * cos - sin * Y;
                         Y = X2 * sin + Y * cos;
@@ -185,8 +186,8 @@ public class ClipperOffset {
                 else {
                     double X = -1.0, Y = -1.0;
                     for (int j = 0; j < 4; ++j) {
-                        destPoly.add( new LongPoint( (int) Math.round( srcPoly.get( 0 ).getX() + X * delta ), (int) Math.round( srcPoly.get( 0 ).getY() + Y
-                                        * delta ) ) );
+                        destPoly.add( new Point( srcPoly.get( 0 ).getX() + X * delta ,  srcPoly.get( 0 ).getY() + Y
+                                        * delta ) );
                         if (X < 0) {
                             X = 1;
                         }
@@ -211,7 +212,7 @@ public class ClipperOffset {
                 normals.add( Point.getUnitNormal( srcPoly.get( len - 1 ), srcPoly.get( 0 ) ) );
             }
             else {
-                normals.add( new DoublePoint( normals.get( len - 2 ) ) );
+                normals.add( new Point( normals.get( len - 2 ) ) );
             }
 
             if (node.getEndType() == EndType.CLOSED_POLYGON) {
@@ -229,11 +230,11 @@ public class ClipperOffset {
                 destPolys.add( destPoly );
                 destPoly = new Path();
                 //re-build m_normals ...
-                final DoublePoint n = normals.get( len - 1 );
+                final Point n = normals.get( len - 1 );
                 for (int j = len - 1; j > 0; j--) {
-                    normals.set( j, new DoublePoint( -normals.get( j - 1 ).getX(), -normals.get( j - 1 ).getY() ) );
+                    normals.set( j, new Point( -normals.get( j - 1 ).getX(), -normals.get( j - 1 ).getY() ) );
                 }
-                normals.set( 0, new DoublePoint( -n.getX(), -n.getY(), 0 ) );
+                normals.set( 0, new Point( -n.getX(), -n.getY()) );
                 k[0] = 0;
                 for (int j = len - 1; j >= 0; j--) {
                     offsetPoint( j, k, node.getJoinType() );
@@ -246,21 +247,21 @@ public class ClipperOffset {
                     offsetPoint( j, k, node.getJoinType() );
                 }
 
-                LongPoint pt1;
+                Point pt1;
                 if (node.getEndType() == EndType.OPEN_BUTT) {
                     final int j = len - 1;
-                    pt1 = new LongPoint( (int) Math.round( srcPoly.get( j ).getX() + normals.get( j ).getX() * delta ), (int) Math.round( srcPoly.get( j )
-                                    .getY() + normals.get( j ).getY() * delta ), 0 );
+                    pt1 = new Point( srcPoly.get( j ).getX() + normals.get( j ).getX() * delta ,  srcPoly.get( j )
+                                    .getY() + normals.get( j ).getY() * delta );
                     destPoly.add( pt1 );
-                    pt1 = new LongPoint( (int) Math.round( srcPoly.get( j ).getX() - normals.get( j ).getX() * delta ), (int) Math.round( srcPoly.get( j )
-                                    .getY() - normals.get( j ).getY() * delta ), 0 );
+                    pt1 = new Point( srcPoly.get( j ).getX() - normals.get( j ).getX() * delta , srcPoly.get( j )
+                                    .getY() - normals.get( j ).getY() * delta );
                     destPoly.add( pt1 );
                 }
                 else {
                     final int j = len - 1;
                     k[0] = len - 2;
                     inA = 0;
-                    normals.set( j, new DoublePoint( -normals.get( j ).getX(), -normals.get( j ).getY() ) );
+                    normals.set( j, new Point( -normals.get( j ).getX(), -normals.get( j ).getY() ) );
                     if (node.getEndType() == EndType.OPEN_SQUARE) {
                         doSquare( j, k[0] );
                     }
@@ -271,10 +272,10 @@ public class ClipperOffset {
 
                 //re-build m_normals ...
                 for (int j = len - 1; j > 0; j--) {
-                    normals.set( j, new DoublePoint( -normals.get( j - 1 ).getX(), -normals.get( j - 1 ).getY() ) );
+                    normals.set( j, new Point( -normals.get( j - 1 ).getX(), -normals.get( j - 1 ).getY() ) );
                 }
 
-                normals.set( 0, new DoublePoint( -normals.get( 1 ).getX(), -normals.get( 1 ).getY() ) );
+                normals.set( 0, new Point( -normals.get( 1 ).getX(), -normals.get( 1 ).getY() ) );
 
                 k[0] = len - 1;
                 for (int j = k[0] - 1; j > 0; --j) {
@@ -282,11 +283,11 @@ public class ClipperOffset {
                 }
 
                 if (node.getEndType() == EndType.OPEN_BUTT) {
-                    pt1 = new LongPoint( (int) Math.round( srcPoly.get( 0 ).getX() - normals.get( 0 ).getX() * delta ), (int) Math.round( srcPoly.get( 0 )
-                                    .getY() - normals.get( 0 ).getY() * delta ) );
+                    pt1 = new Point( srcPoly.get( 0 ).getX() - normals.get( 0 ).getX() * delta , srcPoly.get( 0 )
+                                    .getY() - normals.get( 0 ).getY() * delta );
                     destPoly.add( pt1 );
-                    pt1 = new LongPoint( (int) Math.round( srcPoly.get( 0 ).getX() + normals.get( 0 ).getX() * delta ), (int) Math.round( srcPoly.get( 0 )
-                                    .getY() + normals.get( 0 ).getY() * delta ) );
+                    pt1 = new Point( srcPoly.get( 0 ).getX() + normals.get( 0 ).getX() * delta , srcPoly.get( 0 )
+                                    .getY() + normals.get( 0 ).getY() * delta );
                     destPoly.add( pt1 );
                 }
                 else {
@@ -310,13 +311,13 @@ public class ClipperOffset {
 
         double X = normals.get( k ).getX(), Y = normals.get( k ).getY(), X2;
         for (int i = 0; i < steps; ++i) {
-            destPoly.add( new LongPoint( (int) Math.round( srcPoly.get( j ).getX() + X * delta ), (int) Math.round( srcPoly.get( j ).getY() + Y * delta ) ) );
+            destPoly.add( new Point(  srcPoly.get( j ).getX() + X * delta , srcPoly.get( j ).getY() + Y * delta ) );
             X2 = X;
             X = X * cos - sin * Y;
             Y = X2 * sin + Y * cos;
         }
-        destPoly.add( new LongPoint( (int) Math.round( srcPoly.get( j ).getX() + normals.get( j ).getX() * delta ), (int) Math.round( srcPoly.get( j ).getY()
-                        + normals.get( j ).getY() * delta ) ) );
+        destPoly.add( new Point( srcPoly.get( j ).getX() + normals.get( j ).getX() * delta , srcPoly.get( j ).getY()
+                        + normals.get( j ).getY() * delta ) );
     }
 
     private void doSquare( int j, int k ) {
@@ -327,13 +328,13 @@ public class ClipperOffset {
         final double sjx = srcPoly.get( j ).getX();
         final double sjy = srcPoly.get( j ).getY();
         final double dx = Math.tan( Math.atan2( inA, nkx * njx + nky * njy ) / 4 );
-        destPoly.add( new LongPoint( (int) Math.round( sjx + delta * (nkx - nky * dx) ), (int) Math.round( sjy + delta * (nky + nkx * dx) ), 0 ) );
-        destPoly.add( new LongPoint( (int) Math.round( sjx + delta * (njx + njy * dx) ), (int) Math.round( sjy + delta * (njy - njx * dx) ), 0 ) );
+        destPoly.add( new Point( sjx + delta * (nkx - nky * dx) ,  sjy + delta * (nky + nkx * dx) ) );
+        destPoly.add( new Point( sjx + delta * (njx + njy * dx) ,  sjy + delta * (njy - njx * dx) ) );
     }
 
     //------------------------------------------------------------------------------
 
-    public void execute( Paths solution, double delta ) {
+    public void execute(Paths solution, double delta ) {
         solution.clear();
         fixOrientations();
         doOffset( delta );
@@ -347,10 +348,10 @@ public class ClipperOffset {
             final LongRect r = destPolys.getBounds();
             final Path outer = new Path( 4 );
 
-            outer.add( new LongPoint( r.left - 10, r.bottom + 10, 0 ) );
-            outer.add( new LongPoint( r.right + 10, r.bottom + 10, 0 ) );
-            outer.add( new LongPoint( r.right + 10, r.top - 10, 0 ) );
-            outer.add( new LongPoint( r.left - 10, r.top - 10, 0 ) );
+            outer.add( new Point( r.left - 10, r.bottom + 10 ) );
+            outer.add( new Point( r.right + 10, r.bottom + 10 ) );
+            outer.add( new Point( r.right + 10, r.top - 10 ) );
+            outer.add( new Point( r.left - 10, r.top - 10 ) );
 
             clpr.addPath( outer, PolyType.SUBJECT, true );
 
@@ -363,7 +364,7 @@ public class ClipperOffset {
 
     //------------------------------------------------------------------------------
 
-    public void execute( PolyTree solution, double delta ) {
+    public void execute(PolyTree solution, double delta ) {
         solution.Clear();
         fixOrientations();
         doOffset( delta );
@@ -378,10 +379,10 @@ public class ClipperOffset {
             final LongRect r = destPolys.getBounds();
             final Path outer = new Path( 4 );
 
-            outer.add( new LongPoint( r.left - 10, r.bottom + 10, 0 ) );
-            outer.add( new LongPoint( r.right + 10, r.bottom + 10, 0 ) );
-            outer.add( new LongPoint( r.right + 10, r.top - 10, 0 ) );
-            outer.add( new LongPoint( r.left - 10, r.top - 10, 0 ) );
+            outer.add( new Point( r.left - 10, r.bottom + 10 ) );
+            outer.add( new Point( r.right + 10, r.bottom + 10 ) );
+            outer.add( new Point( r.right + 10, r.top - 10 ) );
+            outer.add( new Point( r.left - 10, r.top - 10 ) );
 
             clpr.addPath( outer, PolyType.SUBJECT, true );
 
@@ -406,7 +407,7 @@ public class ClipperOffset {
     private void fixOrientations() {
         //fixup orientations of all closed paths if the orientation of the
         //closed path with the lowermost vertex is wrong ...
-        if (lowest.getX() >= 0 && !polyNodes.childs.get( (int) lowest.getX() ).getPolygon().orientation()) {
+        if (lowestX >= 0 && !polyNodes.childs.get( lowestX ).getPolygon().orientation()) {
             for (int i = 0; i < polyNodes.getChildCount(); i++) {
                 final PolyNode node = polyNodes.childs.get( i );
                 if (node.getEndType() == EndType.CLOSED_POLYGON || node.getEndType() == EndType.CLOSED_LINE && node.getPolygon().orientation()) {
@@ -432,8 +433,8 @@ public class ClipperOffset {
         final double nky = normals.get( k ).getY();
         final double njy = normals.get( j ).getY();
         final double njx = normals.get( j ).getX();
-        final long sjx = srcPoly.get( j ).getX();
-        final long sjy = srcPoly.get( j ).getY();
+        final double sjx = srcPoly.get( j ).getX();
+        final double sjy = srcPoly.get( j ).getY();
         inA = nkx * njy - njx * nky;
 
         if (Math.abs( inA * delta ) < 1.0) {
@@ -442,7 +443,7 @@ public class ClipperOffset {
             final double cosA = nkx * njx + njy * nky;
             if (cosA > 0) // angle ==> 0 degrees
             {
-                destPoly.add( new LongPoint( (int) Math.round( sjx + nkx * delta ), (int) Math.round( sjy + nky * delta ), 0 ) );
+                destPoly.add( new Point(  sjx + nkx * delta,  sjy + nky * delta ) );
                 return;
             }
             //else angle ==> 180 degrees
@@ -455,9 +456,9 @@ public class ClipperOffset {
         }
 
         if (inA * delta < 0) {
-            destPoly.add( new LongPoint( (int) Math.round( sjx + nkx * delta ), (int) Math.round( sjy + nky * delta ) ) );
+            destPoly.add( new Point(  sjx + nkx * delta , sjy + nky * delta ) );
             destPoly.add( srcPoly.get( j ) );
-            destPoly.add( new LongPoint( (int) Math.round( sjx + njx * delta ), (int) Math.round( sjy + njy * delta ) ) );
+            destPoly.add( new Point(  sjx + njx * delta ,  sjy + njy * delta ) );
         }
         else {
             switch (jointype) {

@@ -11,7 +11,7 @@ import de.lighti.clipper.Clipper.PolyFillType;
 import de.lighti.clipper.LongRect;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
-import de.lighti.clipper.Point.LongPoint;
+import de.lighti.clipper.Point;
 
 //a very simple class that builds an SVG file with any number of
 //polygons of the specified formats ...
@@ -125,7 +125,7 @@ class SVGBuilder {
 
         for (; i < PolyInfoList.size(); i++) {
             for (final Path pg : PolyInfoList.get( i ).polygons) {
-                for (final LongPoint pt : pg) {
+                for (final Point pt : pg) {
                     if (pt.getX() < rec.left) {
                         rec.left = pt.getX();
                     }
@@ -146,8 +146,8 @@ class SVGBuilder {
         rec.top = (int) (rec.top * scale);
         rec.right = (int) (rec.right * scale);
         rec.bottom = (int) (rec.bottom * scale);
-        final long offsetX = -rec.left + margin;
-        final long offsetY = -rec.top + margin;
+        final long offsetX = (long) -rec.left + margin;
+        final long offsetY = (long) -rec.top + margin;
 
         final BufferedWriter writer = new BufferedWriter( new FileWriter( filename ) );
         try {
@@ -174,9 +174,9 @@ class SVGBuilder {
                 if (pi.si.showCoords) {
                     writer.write( String.format( "<g font-family=\"Verdana\" font-size=\"11\" fill=\"black\">%n%n" ) );
                     for (final Path p : pi.polygons) {
-                        for (final LongPoint pt : p) {
-                            final long x = pt.getX();
-                            final long y = pt.getY();
+                        for (final Point pt : p) {
+                            final long x = (long) pt.getX();
+                            final long y = (long) pt.getY();
                             writer.write( String.format( "<text x=\"%d\" y=\"%d\">%d,%d</text>\n", (int) (x * scale + offsetX), (int) (y * scale + offsetY), x,
                                             y ) );
 
