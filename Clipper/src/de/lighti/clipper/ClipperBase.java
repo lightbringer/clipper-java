@@ -5,48 +5,47 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import de.lighti.clipper.Path.OutRec;
-import de.lighti.clipper.Point.LongPoint;
 
 public abstract class ClipperBase implements Clipper {
     protected class LocalMinima {
-        long y;
+        double y;
         Edge leftBound;
         Edge rightBound;
         LocalMinima next;
     }
 
     protected class Scanbeam {
-        long y;
+        double y;
         Scanbeam next;
     }
 
     protected class Maxima {
-        long x;
+        double x;
         Maxima next;
         Maxima prev;
     }
 
-    private static void initEdge( Edge e, Edge eNext, Edge ePrev, LongPoint pt ) {
+    private static void initEdge(Edge e, Edge eNext, Edge ePrev, Point pt ) {
         e.next = eNext;
         e.prev = ePrev;
-        e.setCurrent( new LongPoint( pt ) );
+        e.setCurrent( new Point( pt ) );
         e.outIdx = Edge.UNASSIGNED;
     }
 
-    private static void initEdge2( Edge e, PolyType polyType ) {
+    private static void initEdge2(Edge e, PolyType polyType ) {
         if (e.getCurrent().getY() >= e.next.getCurrent().getY()) {
-            e.setBot( new LongPoint( e.getCurrent() ) );
-            e.setTop( new LongPoint( e.next.getCurrent() ) );
+            e.setBot( new Point( e.getCurrent() ) );
+            e.setTop( new Point( e.next.getCurrent() ) );
         }
         else {
-            e.setTop( new LongPoint( e.getCurrent() ) );
-            e.setBot( new LongPoint( e.next.getCurrent() ) );
+            e.setTop( new Point( e.getCurrent() ) );
+            e.setBot( new Point( e.next.getCurrent() ) );
         }
         e.updateDeltaX();
         e.polyTyp = polyType;
     }
 
-    private static void rangeTest( LongPoint Pt ) {
+    private static void rangeTest( Point Pt ) {
 
         if (Pt.getX() > LOW_RANGE || Pt.getY() > LOW_RANGE || -Pt.getX() > LOW_RANGE || -Pt.getY() > LOW_RANGE) {
             if (Pt.getX() > HI_RANGE || Pt.getY() > HI_RANGE || -Pt.getX() > HI_RANGE || -Pt.getY() > HI_RANGE) {
@@ -123,7 +122,7 @@ public abstract class ClipperBase implements Clipper {
         boolean IsFlat = true;
 
         //1. Basic (first) edge initialization ...
-        edges.get( 1 ).setCurrent( new LongPoint( pg.get( 1 ) ) );
+        edges.get( 1 ).setCurrent( new Point( pg.get( 1 ) ) );
         rangeTest( pg.get( 0 ) );
         rangeTest( pg.get( highI ) );
         initEdge( edges.get( 0 ), edges.get( 1 ), edges.get( highI ), pg.get( 0 ) );
@@ -343,7 +342,7 @@ public abstract class ClipperBase implements Clipper {
         return preserveCollinear;
     }
 
-    protected boolean popLocalMinima( long y, LocalMinima[] current ) {
+    protected boolean popLocalMinima( double y, LocalMinima[] current ) {
         LOGGER.entering( ClipperBase.class.getName(), "popLocalMinima" );
         current[0] = currentLM;
         if (currentLM != null && currentLM.y == y) {
@@ -353,7 +352,7 @@ public abstract class ClipperBase implements Clipper {
         return false;
     }
 
-    private Edge processBound( Edge e, boolean LeftBoundIsForward ) {
+    private Edge processBound(Edge e, boolean LeftBoundIsForward ) {
         Edge EStart, result = e;
         Edge Horz;
 
@@ -498,12 +497,12 @@ public abstract class ClipperBase implements Clipper {
             insertScanbeam(lm.y);
             Edge e = lm.leftBound;
             if (e != null) {
-                e.setCurrent( new LongPoint( e.getBot() ) );
+                e.setCurrent( new Point( e.getBot() ) );
                 e.outIdx = Edge.UNASSIGNED;
             }
             e = lm.rightBound;
             if (e != null) {
-                e.setCurrent( new LongPoint( e.getBot() ) );
+                e.setCurrent( new Point( e.getBot() ) );
                 e.outIdx = Edge.UNASSIGNED;
             }
             lm = lm.next;
@@ -511,7 +510,7 @@ public abstract class ClipperBase implements Clipper {
         activeEdges = null;
     }
 
-    protected void insertScanbeam( long y ) {
+    protected void insertScanbeam( double y ) {
         LOGGER.entering( ClipperBase.class.getName(), "insertScanbeam" );
 
         //single-linked list: sorted descending, ignoring dups.
@@ -541,7 +540,7 @@ public abstract class ClipperBase implements Clipper {
         }
     }
 
-    protected boolean popScanbeam( long[] y ) {
+    protected boolean popScanbeam( double[] y ) {
         if (scanbeam == null) {
             y[0] = 0;
             return false;
@@ -605,7 +604,7 @@ public abstract class ClipperBase implements Clipper {
         }
     }
 
-    protected void swapPositionsInAEL( Edge edge1, Edge edge2 ) {
+    protected void swapPositionsInAEL(Edge edge1, Edge edge2 ) {
         LOGGER.entering( ClipperBase.class.getName(), "swapPositionsInAEL" );
 
         //check that one or other edge hasn't already been removed from AEL ...

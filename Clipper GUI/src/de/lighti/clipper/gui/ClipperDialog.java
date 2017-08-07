@@ -38,7 +38,7 @@ import de.lighti.clipper.Clipper.PolyFillType;
 import de.lighti.clipper.Clipper.PolyType;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
-import de.lighti.clipper.Point.LongPoint;
+import de.lighti.clipper.Point;
 
 public class ClipperDialog extends JFrame {
     static boolean loadFromFile( String filename, Paths ppg, int dec_places ) throws IOException {
@@ -92,7 +92,7 @@ public class ClipperDialog extends JFrame {
 
                         x = x + xOffset;
                         y = y + yOffset;
-                        pg.add( new LongPoint( x, y ) );
+                        pg.add( new Point( x, y ) );
                     }
                 }
                 else {
@@ -111,7 +111,7 @@ public class ClipperDialog extends JFrame {
 
                         x = x * scaling + xOffset;
                         y = y * scaling + yOffset;
-                        pg.add( new LongPoint( (int) Math.round( x ), (int) Math.round( y ) ) );
+                        pg.add( new Point( (int) Math.round( x ), (int) Math.round( y ) ) );
                     }
                 }
             }

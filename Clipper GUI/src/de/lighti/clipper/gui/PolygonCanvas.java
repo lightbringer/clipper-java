@@ -25,7 +25,6 @@ import de.lighti.clipper.ClipperOffset;
 import de.lighti.clipper.DefaultClipper;
 import de.lighti.clipper.Path;
 import de.lighti.clipper.Paths;
-import de.lighti.clipper.Point.LongPoint;
 
 public class PolygonCanvas extends JPanel {
 
@@ -95,7 +94,7 @@ public class PolygonCanvas extends JPanel {
         final int[] y = new int[p.size()];
 
         for (int i = p.size() - 1; i >= 0; i--) {
-            final LongPoint ip = p.get( i );
+            final de.lighti.clipper.Point ip = p.get( i );
             x[i] = (int) (ip.getX() * zoom) + cur.x - origin.x;
             y[i] = (int) (ip.getY() * zoom) + cur.y - origin.y;
         }
@@ -119,7 +118,7 @@ public class PolygonCanvas extends JPanel {
                 for (int j = 0; j < vertCnt; ++j) {
                     final float x = polyStream.readFloat() * scale;
                     final float y = polyStream.readFloat() * scale;
-                    pg.add( new LongPoint( (int) x, (int) y ) );
+                    pg.add( new de.lighti.clipper.Point( (int) x, (int) y ) );
                 }
                 subjects.add( pg );
             }
@@ -157,7 +156,7 @@ public class PolygonCanvas extends JPanel {
                 final int type = pit.currentSegment( coords );
                 switch (type) {
                     case PathIterator.SEG_LINETO:
-                        clip.add( new LongPoint( (int) (coords[0] * scale), (int) (coords[1] * scale) ) );
+                        clip.add( new de.lighti.clipper.Point( (int) (coords[0] * scale), (int) (coords[1] * scale) ) );
                         break;
                     default:
                         break;
@@ -172,8 +171,8 @@ public class PolygonCanvas extends JPanel {
 
     }
 
-    private LongPoint GenerateRandomPoint( int l, int t, int r, int b, Random rand ) {
-        return new LongPoint( rand.nextInt( r ) + l, rand.nextInt( b ) + t );
+    private de.lighti.clipper.Point GenerateRandomPoint(int l, int t, int r, int b, Random rand ) {
+        return new de.lighti.clipper.Point( rand.nextInt( r ) + l, rand.nextInt( b ) + t );
     }
 
     public void generateRandomPolygon() {

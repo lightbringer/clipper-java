@@ -6,9 +6,8 @@ import java.util.List;
 
 import de.lighti.clipper.Clipper.EndType;
 import de.lighti.clipper.Clipper.JoinType;
-import de.lighti.clipper.Point.LongPoint;
 
-class PolyNode {
+public class PolyNode {
     enum NodeType {
         ANY, OPEN, CLOSED
     }
@@ -36,7 +35,7 @@ class PolyNode {
         return Collections.unmodifiableList( childs );
     }
 
-    public List<LongPoint> getContour() {
+    public List<Point> getContour() {
         return polygon;
     }
 

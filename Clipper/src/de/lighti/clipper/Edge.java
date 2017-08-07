@@ -6,7 +6,6 @@ import de.lighti.clipper.Clipper.ClipType;
 import de.lighti.clipper.Clipper.Direction;
 import de.lighti.clipper.Clipper.PolyFillType;
 import de.lighti.clipper.Clipper.PolyType;
-import de.lighti.clipper.Point.LongPoint;
 
 class Edge {
     static enum Side {
@@ -44,20 +43,20 @@ class Edge {
         edge2.side = side;
     }
 
-    static long topX( Edge edge, long currentY ) {
+    static double topX(Edge edge, double currentY ) {
         if (currentY == edge.getTop().getY()) {
             return edge.getTop().getX();
         }
-        return (int) (edge.getBot().getX() + Math.round( edge.deltaX * (currentY - edge.getBot().getY()) ));
+        return  edge.getBot().getX() + edge.deltaX * (currentY - edge.getBot().getY());
     }
 
-    private final LongPoint bot;
+    private final Point bot;
 
-    private final LongPoint current; //current (updated for every new scanbeam)
+    private final Point current; //current (updated for every new scanbeam)
 
-    private final LongPoint top;
+    private final Point top;
 
-    private final LongPoint delta;
+    private final Point delta;
     double deltaX;
 
     PolyType polyTyp;
@@ -86,10 +85,10 @@ class Edge {
     private final static Logger LOGGER = Logger.getLogger( Edge.class.getName() );
 
     public Edge() {
-        delta = new LongPoint();
-        top = new LongPoint();
-        bot = new LongPoint();
-        current = new LongPoint();
+        delta = new Point();
+        top = new Point();
+        bot = new Point();
+        current = new Point();
     }
 
     public Edge findNextLocMin() {
@@ -120,15 +119,15 @@ class Edge {
         return e;
     }
 
-    public LongPoint getBot() {
+    public Point getBot() {
         return bot;
     }
 
-    public LongPoint getCurrent() {
+    public Point getCurrent() {
         return current;
     }
 
-    public LongPoint getDelta() {
+    public Point getDelta() {
         return delta;
     }
 
@@ -152,11 +151,11 @@ class Edge {
         return result;
     }
 
-    public Edge getNextInAEL( Direction direction ) {
+    public Edge getNextInAEL(Direction direction ) {
         return direction == Direction.LEFT_TO_RIGHT ? nextInAEL : prevInAEL;
     }
 
-    public LongPoint getTop() {
+    public Point getTop() {
         return top;
     }
 
@@ -294,7 +293,7 @@ class Edge {
         //swap horizontal edges' top and bottom x's so they follow the natural
         //progression of the bounds - ie so their xbots will align with the
         //adjoining lower edge. [Helpful in the ProcessHorizontal() method.]
-        long temp = top.getX();
+        double temp = top.getX();
         top.setX( bot.getX() );
         bot.setX( temp );
 
@@ -304,15 +303,15 @@ class Edge {
 
     }
 
-    public void setBot( LongPoint bot ) {
+    public void setBot( Point bot ) {
         this.bot.set( bot );
     }
 
-    public void setCurrent( LongPoint current ) {
+    public void setCurrent( Point current ) {
         this.current.set( current );
     }
 
-    public void setTop( LongPoint top ) {
+    public void setTop( Point top ) {
         this.top.set( top );
     }
 
