@@ -6,12 +6,12 @@
 
     <parent>
         <groupId>de.lighti.clipper</groupId>
-        <artifactId>clipper-java</artifactId>
+        <artifactId>clipper-java-double</artifactId>
         <!-- Three first numbers are the base Clipper library version -->
         <version>6.4.2.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>clipper</artifactId>
+    <artifactId>clipper-double</artifactId>
 
     <build>
         <sourceDirectory>src</sourceDirectory>
