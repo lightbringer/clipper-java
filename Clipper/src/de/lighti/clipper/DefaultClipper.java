@@ -1216,7 +1216,7 @@ public class DefaultClipper extends ClipperBase {
                     continue;
                 }
                 else if (outRec.isOpen) {
-                    fixupOutPolygon( outRec );
+                    fixupOutPolyline( outRec );
                 }
                 else {
                     fixupOutPolygon( outRec );
