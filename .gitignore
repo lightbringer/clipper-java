@@ -1,8 +1,5 @@
-# Ignore Eclipse stuff
-.metadata
-target
+# Ignore Eclipse output directory
 bin
-.settings
 
 # Ignore Gradle stuff
 .gradle
