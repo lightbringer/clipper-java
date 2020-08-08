@@ -1,0 +1,32 @@
+plugins {
+	id 'java'
+}
+
+group = "de.lighti"
+version = "6.4.2"
+description = "Polygon Clipper is a library to execute various boolean operations (Union, Difference, XOR, etc.) on arbitrary 2D polygons, e.g. calculate the area in which two polygons overlap. It comes with two Demo applications, one for the console and one using a Swing based GUI."
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.name,
+                   'Implementation-Version': project.version
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.deprecation = true
+}

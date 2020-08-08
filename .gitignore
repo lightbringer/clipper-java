@@ -1,4 +1,9 @@
+# Ignore Eclipse stuff
 .metadata
 target
 bin
 .settings
+
+# Ignore Gradle stuff
+.gradle
+build

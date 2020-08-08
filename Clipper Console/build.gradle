@@ -1,0 +1,36 @@
+plugins {
+	id 'java'
+}
+
+group = "de.lighti"
+version = "6.4.2"
+description = "A command line tool to read and process polygon files."
+
+dependencies {
+	compile project(':Clipper');
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': project.name,
+                   'Implementation-Version': project.version
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src'
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.compilerArgs << '-Xlint:unchecked'
+    options.deprecation = true
+}
