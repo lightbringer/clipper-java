@@ -1,3 +1,5 @@
+rootProject.name='ClipperJava'
 include 'Clipper', 'Clipper Console', 'Clipper GUI'
+project(':Clipper').name = 'Clipper'
 project(':Clipper Console').name = 'ClipperConsole'
 project(':Clipper GUI').name = 'ClipperGUI'
