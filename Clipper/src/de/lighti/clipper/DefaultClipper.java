@@ -1316,6 +1316,7 @@ public class DefaultClipper extends ClipperBase {
 
     //----------------------------------------------------------------------
 
+    @SuppressWarnings("unused")
     private void fixupOutPolyline( OutRec outrec ) {
         Path.OutPt pp = outrec.getPoints();
         Path.OutPt lastPP = pp.prev;

@@ -162,7 +162,8 @@ public abstract class Point<T extends Number & Comparable<T>> {
         }
     }
 
-    private final static NumberComparator NUMBER_COMPARATOR = new NumberComparator();
+    @SuppressWarnings("rawtypes")
+    private static final NumberComparator NUMBER_COMPARATOR = new NumberComparator();
 
     protected T x;
 
@@ -180,6 +181,7 @@ public abstract class Point<T extends Number & Comparable<T>> {
         this.z = z;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals( Object obj ) {
         if (obj == null) {
