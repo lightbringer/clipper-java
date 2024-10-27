@@ -1,3 +1,10 @@
+**Deprecation notice Oct 2024:** I wrote this code many years ago and stopped maintaining it a long time ago. But since it still seems very popular, and I get the occasional email about it: 
+
+> [!NOTE]
+> There exists a verion 2.0 of the orignal library, and someone already made a [Java port](https://github.com/micycle1/Clipper2-java/) of that. 
+
+Original readme below:
+
 # clipper-java
 A Polygon clipper for Java
 
